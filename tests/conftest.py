@@ -4,6 +4,10 @@ import tempfile
 from collections import Mapping
 from datetime import timedelta
 
+from copy import deepcopy
+
+from web_frontend.config.settings.common import TEMPLATES as common_templates
+
 import pytest
 
 from osmaxx.utils.frozendict import frozendict
@@ -11,6 +15,12 @@ from osmaxx.utils.frozendict import frozendict
 test_data_dir = os.path.join(os.path.dirname(__file__), 'test_data')
 
 postgres_container_userland_port = 65432  # required for travis, so using it everywhere
+
+_template_engines = deepcopy(common_templates)
+for engine in _template_engines:
+    engine['OPTIONS']['context_processors'].remove('social_django.context_processors.backends')
+    engine['OPTIONS']['context_processors'].remove('social_django.context_processors.login_redirect')
+    engine['OPTIONS']['context_processors'].remove('osmaxx.excerptexport.context_processors.message_adapter_context_processor')
 
 
 def pytest_configure():
@@ -42,27 +52,7 @@ def pytest_configure():
             'django.template.loaders.filesystem.Loader',
             'django.template.loaders.app_directories.Loader',
         ),
-        TEMPLATES=[
-            {
-                'BACKEND': 'django.template.backends.django.DjangoTemplates',
-                'OPTIONS': {
-                    'context_processors': [
-                        'django.contrib.auth.context_processors.auth',
-                        'django.template.context_processors.debug',
-                        'django.template.context_processors.i18n',
-                        'django.template.context_processors.media',
-                        'django.template.context_processors.static',
-                        'django.template.context_processors.tz',
-                        'django.contrib.messages.context_processors.messages',
-                        'django.template.context_processors.request',
-                    ],
-                    'loaders': [
-                        'django.template.loaders.filesystem.Loader',
-                        'django.template.loaders.app_directories.Loader',
-                    ]
-                },
-            },
-        ],
+        TEMPLATES=_template_engines,
         MIDDLEWARE_CLASSES=(
             'django.middleware.common.CommonMiddleware',
             'django.contrib.sessions.middleware.SessionMiddleware',

@@ -87,6 +87,7 @@ class ExtractionOrder(models.Model):
         return render_to_string(
             'excerptexport/email/all_exports_of_extraction_order_done_subject.txt',
             context=view_context,
+            using='plaintext',
         ).strip()
 
     def _get_all_exports_done_mail_body(self, incoming_request):
@@ -99,6 +100,7 @@ class ExtractionOrder(models.Model):
         return render_to_string(
             'excerptexport/email/all_exports_of_extraction_order_done_body.txt',
             context=view_context,
+            using='plaintext',
         ).strip()
 
 

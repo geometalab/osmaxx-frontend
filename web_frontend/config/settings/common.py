@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import os
 from datetime import timedelta
 import environ
+from copy import deepcopy
 
 from django.contrib.messages import constants as message_constants
 from django.utils import timezone
@@ -164,33 +165,40 @@ USE_TZ = True
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/1.8/ref/templates/upgrading/#the-templates-settings
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            str(APPS_DIR.path('templates')),
+_html_template_engine = {
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'DIRS': [
+        str(APPS_DIR.path('templates')),
+    ],
+    'OPTIONS': {
+        'context_processors': [
+            'django.contrib.auth.context_processors.auth',
+            'django.template.context_processors.debug',
+            'django.template.context_processors.i18n',
+            'django.template.context_processors.media',
+            'django.template.context_processors.static',
+            'django.template.context_processors.tz',
+            'django.contrib.messages.context_processors.messages',
+            'social_django.context_processors.backends',
+            'social_django.context_processors.login_redirect',
+            'django.template.context_processors.request',
+            'osmaxx.excerptexport.context_processors.message_adapter_context_processor'
         ],
-        'OPTIONS': {
-            'context_processors': [
-                'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.debug',
-                'django.template.context_processors.i18n',
-                'django.template.context_processors.media',
-                'django.template.context_processors.static',
-                'django.template.context_processors.tz',
-                'django.contrib.messages.context_processors.messages',
-                'social_django.context_processors.backends',
-                'social_django.context_processors.login_redirect',
-                'django.template.context_processors.request',
-                'osmaxx.excerptexport.context_processors.message_adapter_context_processor'
-            ],
-            'loaders': [
-                'django.template.loaders.filesystem.Loader',
-                'django.template.loaders.app_directories.Loader',
-            ]
-        },
+        'loaders': [
+            'django.template.loaders.filesystem.Loader',
+            'django.template.loaders.app_directories.Loader',
+        ]
     },
+}
+_plaintext_template_engine = deepcopy(_html_template_engine)
+_plaintext_template_engine['NAME'] = 'plaintext'
+_plaintext_template_engine['OPTIONS']['autoescape'] = False
+
+TEMPLATES = [
+    _html_template_engine,
+    _plaintext_template_engine,
 ]
+
 
 # STATIC FILE CONFIGURATION
 # ------------------------------------------------------------------------------

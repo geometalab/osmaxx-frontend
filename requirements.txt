@@ -23,7 +23,7 @@ django-model-utils==3.1.2
 django-rq==2.0
 django-secure==1.0.1
 django-stored-messages==1.4.0
-django==1.11.20
+django==1.11.23
 djangorestframework-gis==0.14
 djangorestframework-jwt==1.11.0
 djangorestframework==3.9.4
